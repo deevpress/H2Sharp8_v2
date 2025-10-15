@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31702.278
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36109.1 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "H2Example", "H2Example\H2Example.csproj", "{7ED5740C-081D-4D1C-B8A0-29C4E92B11C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "H2SharpADO.NET50", "H2SharpADO.NET50\H2SharpADO.NET50.csproj", "{0426AAE0-926D-4E2F-A5B0-15D4F744CA04}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "H2Sharp.ADONET8", "H2SharpADO.NET50\H2Sharp.ADONET8.csproj", "{0426AAE0-926D-4E2F-A5B0-15D4F744CA04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

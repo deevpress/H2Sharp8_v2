@@ -182,15 +182,15 @@ namespace System.Data.H2
         {
             switch (level)
             {
-                case java.sql.Connection.__Fields.TRANSACTION_NONE:
+                case java.sql.Connection.TRANSACTION_NONE:
                     return IsolationLevel.Unspecified;
-                case java.sql.Connection.__Fields.TRANSACTION_READ_COMMITTED:
+                case java.sql.Connection.TRANSACTION_READ_COMMITTED:
                     return IsolationLevel.ReadCommitted;
-                case java.sql.Connection.__Fields.TRANSACTION_READ_UNCOMMITTED:
+                case java.sql.Connection.TRANSACTION_READ_UNCOMMITTED:
                     return IsolationLevel.ReadUncommitted;
-                case java.sql.Connection.__Fields.TRANSACTION_REPEATABLE_READ:
+                case java.sql.Connection.TRANSACTION_REPEATABLE_READ:
                     return IsolationLevel.RepeatableRead;
-                case java.sql.Connection.__Fields.TRANSACTION_SERIALIZABLE:
+                case java.sql.Connection.TRANSACTION_SERIALIZABLE:
                     return IsolationLevel.Serializable;
                 default:
                     throw new NotSupportedException("unsupported transaction level");
@@ -201,15 +201,15 @@ namespace System.Data.H2
             switch (level)
             {
                 case IsolationLevel.Unspecified:
-                    return java.sql.Connection.__Fields.TRANSACTION_NONE;
+                    return java.sql.Connection.TRANSACTION_NONE;
                 case IsolationLevel.ReadCommitted:
-                    return java.sql.Connection.__Fields.TRANSACTION_READ_COMMITTED;
+                    return java.sql.Connection.TRANSACTION_READ_COMMITTED;
                 case IsolationLevel.ReadUncommitted:
-                    return java.sql.Connection.__Fields.TRANSACTION_READ_UNCOMMITTED;
+                    return java.sql.Connection.TRANSACTION_READ_UNCOMMITTED;
                 case IsolationLevel.RepeatableRead:
-                    return java.sql.Connection.__Fields.TRANSACTION_REPEATABLE_READ;
+                    return java.sql.Connection.TRANSACTION_REPEATABLE_READ;
                 case IsolationLevel.Serializable:
-                    return java.sql.Connection.__Fields.TRANSACTION_SERIALIZABLE;
+                    return java.sql.Connection.TRANSACTION_SERIALIZABLE;
                 default:
                     throw new NotSupportedException("unsupported transaction level");
             }

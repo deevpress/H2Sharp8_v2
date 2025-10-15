@@ -211,7 +211,7 @@ INSERT INTO OCN_CFG.CFG_BRANCH_DEF(guid, last_updated, mbr_id, code, description
             SimpleTest(connection, "timestamp", DateTime.Today, DateTime.Today.AddDays(1), DateTime.Today.AddDays(2));
             SimpleTest(connection, "date", DateTime.Today, DateTime.Today.AddDays(1), DateTime.Today.AddDays(2));
             //var x1 = table.ToXml();
-            Console.WriteLine("Yuppiii , TEST OK.");
+            Console.WriteLine("Yuppiii, TEST OK.");
         }
 
         /// <summary>
@@ -230,15 +230,22 @@ INSERT INTO OCN_CFG.CFG_BRANCH_DEF(guid, last_updated, mbr_id, code, description
         static void SimpleTest<T>(H2Connection connection, String typeStr, T originalValue, T updatedValue, T insertedValue)
         {
             var tn = "simple_test_" + typeStr.Replace('(', '_').Replace(')', '_');
-            new H2Command("create table " + tn + " (value " + typeStr + " primary key)", connection).ExecuteNonQuery();
+
+            var cmd = "create table " + tn + " (id identity primary key, value " + typeStr + ")";
+            new H2Command(cmd, connection).ExecuteNonQuery();
+
             dynamic val = originalValue;
+
             var originalValueStr =
                 (originalValue is string) ? "'" + originalValue + "'" :
-                (originalValue is DateTime) ? "parsedatetime('" + val.ToString("dd/MM/yyyy hh:mm:ss") + "', 'dd/MM/yyyy hh:mm:ss')" :
-                    originalValue.ToString();
-            new H2Command("insert into " + tn + " values (convert(" + originalValueStr + ", " + typeStr + "))", connection).ExecuteNonQuery();
+                (originalValue is DateTime) ? "parsedatetime('" + val.ToString("dd.MM.yyyy HH:mm:ss") + "', 'dd.MM.yyyy HH:mm:ss')"
+                : originalValue.ToString();
 
-            var adapter = new H2DataAdapter("select * from " + tn + " order by value", connection);
+
+            cmd = "insert into " + tn + " (value) values (" + originalValueStr + ")";
+            new H2Command(cmd, connection).ExecuteNonQuery();
+
+            var adapter = new H2DataAdapter("select * from " + tn + " order by id", connection);
             new H2CommandBuilder(adapter);
             var table = new DataTable(tn)
             {
@@ -247,21 +254,22 @@ INSERT INTO OCN_CFG.CFG_BRANCH_DEF(guid, last_updated, mbr_id, code, description
             adapter.Fill(table);
 
             Debug.Assert(table.Rows.Count.Equals(1));
-            CheckVal(table.Rows[0][0], originalValue);
+            Console.WriteLine($"Type of value: {table.Rows[0][1].GetType().Name}");
+            CheckVal(table.Rows[0][1], originalValue); // 0 — id, 1 — value
 
-            table.Rows.Add(new object[] { insertedValue });
+            table.Rows.Add(new object[] { null, insertedValue }); // id = null, value = insertedValue
             adapter.Update(table);
 
             Reload(table, adapter);
             Debug.Assert(table.Rows.Count.Equals(2));
-            CheckVal(table.Rows[1][0], insertedValue);
+            CheckVal(table.Rows[1][1], insertedValue);
 
-            table.Rows[1][0] = updatedValue;
+            table.Rows[1][1] = updatedValue; // 0 — id, 1 — value
             adapter.Update(table);
 
             Reload(table, adapter);
             Debug.Assert(table.Rows.Count.Equals(2));
-            CheckVal(table.Rows[1][0], updatedValue);
+            CheckVal(table.Rows[1][1], updatedValue);
 
         }
         static void Reload(DataTable table, H2DataAdapter adapter)

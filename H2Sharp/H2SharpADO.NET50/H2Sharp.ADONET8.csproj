@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>H2Sharp8_v14200</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Andrey Deev</Authors>
+    <Company>Neolant</Company>
+	<Description>ADO.NET provider for H2 database (version 1.4.200) compiled via IKVM for .NET 8</Description>
+    <Copyright>2025</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/deevpress/H2Sharp8_v14200</PackageProjectUrl>
+    <PackageIconUrl></PackageIconUrl>
+    <RepositoryUrl>https://github.com/deevpress/H2Sharp8_v14200</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+	<PackageReleaseNotes>
+	Updated H2Sharp for .NET 8 with support for H2 database v1.4.200 via IKVM 8.14.0 runtime.
+	Improved handling of DateTime and timestamp types and ensured full ADO.NET compatibility.
+	</PackageReleaseNotes>
+
+    <PackageTags>ADO.NET H2 IKVM database net8 H2Sharp</PackageTags>
+    <AssemblyVersion>1.4.200.8</AssemblyVersion>
+    <FileVersion>1.4.200.8</FileVersion>
+    <Version>1.4.200.8</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IKVM" Version="8.14.0" />
+	<PackageReference Include="IKVM.Image.JRE" Version="8.14.0" />
+	<PackageReference Include="IKVM.Image.JDK" Version="8.14.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="H2Command.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="H2CommandBuilder.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="H2Connection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="H2DataAdapter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="H2_14200_Net8">
+			<HintPath>..\..\..\H2ConverterForNet8\bin\Debug\net8.0\H2_14200_Net8.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
+</Project>

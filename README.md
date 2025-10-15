@@ -1,13 +1,21 @@
-# h2sharp
+# H2Sharp8_v14200
 
-H2Sharp is an Ado.Net wrapper for the H2 Database Engine written in C#.
+H2Sharp8_v14200 is a fork of the original H2Sharp project, providing an ADO.NET wrapper for the H2 Database Engine (version 1.4.200) optimized for .NET 8. This project enables seamless integration of H2, a Java-based relational database, into .NET applications.
 
-H2 is a java relational database engine. 
+## Overview
+H2 is a lightweight, embeddable, open-source relational database written in Java. This fork uses IKVM.NET (version 8.14.0) to convert the H2 1.4.200 JAR file into .NET Common Intermediate Language (CIL), creating a managed library (`H2_14200_Net8.dll`). The wrapper classes implement the ADO.NET interface, making it easy to use H2 in .NET 8 projects.
 
-This project takes the compiled Jar of H2 and Runs IKVM.Net (program to convert Java Byte code to .Net’s CIL) on it. 
+## Key Features
+- **.NET 8 Support**: Fully compatible with the latest .NET platform.
+- **H2 1.4.200**: Utilizes a specific, stable version of H2 (note: H2 2.0 is not supported in this fork due to compatibility differences).
 
-This project wraps the resulting library with classes that implement the ADO.Net interface to allow for easy use in .Net projects. 
+## Requirements
+- .NET 8 SDK
+- IKVM 8.14.0 (available via NuGet)
+- H2Sharp8_v14200 NuGet package (includes H2_14200_Net8.dll compiled from h2-1.4.200.jar)
 
-As a result the entire system is in CIL (.Net). 
+## Build Instructions
 
-This makes it the first commercial friendly, managed, embeddable, reliable, open source, database for .Net and Mono.
+git clone https://github.com/deevpress/H2Sharp8_v14200.git
+cd H2Sharp8_v14200
+dotnet build
