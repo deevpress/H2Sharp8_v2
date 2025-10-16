@@ -25,10 +25,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IKVM" Version="8.14.0" />
+	<PackageReference Include="H2Sharp8_v14200.Driver" Version="1.4.200.14" />
+	<PackageReference Include="IKVM" Version="8.14.0" />
 	<PackageReference Include="IKVM.Image.JRE" Version="8.14.0" />
 	<PackageReference Include="IKVM.Image.JDK" Version="8.14.0" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
+	<PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,11 +46,5 @@
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>
-
-	<ItemGroup>
-		<Reference Include="H2_14200_Net8">
-			<HintPath>..\..\..\H2ConverterForNet8\bin\Debug\net8.0\H2_14200_Net8.dll</HintPath>
-		</Reference>
-	</ItemGroup>
 
 </Project>
