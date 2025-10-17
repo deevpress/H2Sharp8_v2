@@ -1,8 +1,9 @@
-﻿using System;
-using System.Data.H2;
+﻿using H2Example.Extensions;
+using Neolant.PFEI.SyncModule.H2.Tests;
+using System;
 using System.Data;
+using System.Data.H2;
 using System.Diagnostics;
-using H2Example.Extensions;
 
 namespace H2Example.Tests
 {
@@ -218,7 +219,7 @@ INSERT INTO OCN_CFG.CFG_BRANCH_DEF(guid, last_updated, mbr_id, code, description
                 new byte[] { 5, 4, 3, 2, 1 });
 
             //var x1 = table.ToXml();
-            Console.WriteLine("Yuppiii, TEST OK.");
+            Console.WriteLine("In-memory tests OK.");
         }
 
         /// <summary>
@@ -294,8 +295,7 @@ INSERT INTO OCN_CFG.CFG_BRANCH_DEF(guid, last_updated, mbr_id, code, description
             catch (Exception ex)
             {
                 Console.Write(spacing);
-                Console.WriteLine("FAIL");
-                Console.WriteLine(ex.ToString());
+                ExceptionHelper.WriteAllErrorsToConsole("FAIL", ex);
             }
         }
         static void Reload(DataTable table, H2DataAdapter adapter)
