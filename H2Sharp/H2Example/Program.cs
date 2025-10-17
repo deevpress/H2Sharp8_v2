@@ -9,7 +9,7 @@ namespace H2Example
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("The H2 tests have started...");
 
             var connection = new H2Connection("jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1;");
             connection.Open();
@@ -210,6 +210,11 @@ INSERT INTO OCN_CFG.CFG_BRANCH_DEF(guid, last_updated, mbr_id, code, description
             SimpleTest(connection, "varchar(255)", "10", "11", "12");
             SimpleTest(connection, "timestamp", DateTime.Today, DateTime.Today.AddDays(1), DateTime.Today.AddDays(2));
             SimpleTest(connection, "date", DateTime.Today, DateTime.Today.AddDays(1), DateTime.Today.AddDays(2));
+            SimpleTest(connection, "blob",
+                new byte[] { 1, 2, 3, 4, 5 },
+                new byte[] { 9, 8, 7, 6, 5 },
+                new byte[] { 5, 4, 3, 2, 1 });
+
             //var x1 = table.ToXml();
             Console.WriteLine("Yuppiii, TEST OK.");
         }
@@ -229,48 +234,67 @@ INSERT INTO OCN_CFG.CFG_BRANCH_DEF(guid, last_updated, mbr_id, code, description
         /// <param name="insertedValue"></param>
         static void SimpleTest<T>(H2Connection connection, String typeStr, T originalValue, T updatedValue, T insertedValue)
         {
-            var tn = "simple_test_" + typeStr.Replace('(', '_').Replace(')', '_');
-
-            var cmd = "create table " + tn + " (id identity primary key, value " + typeStr + ")";
-            new H2Command(cmd, connection).ExecuteNonQuery();
-
-            dynamic val = originalValue;
-
-            var originalValueStr =
-                (originalValue is string) ? "'" + originalValue + "'" :
-                (originalValue is DateTime) ? "parsedatetime('" + val.ToString("dd.MM.yyyy HH:mm:ss") + "', 'dd.MM.yyyy HH:mm:ss')"
-                : originalValue.ToString();
-
-
-            cmd = "insert into " + tn + " (value) values (" + originalValueStr + ")";
-            new H2Command(cmd, connection).ExecuteNonQuery();
-
-            var adapter = new H2DataAdapter("select * from " + tn + " order by id", connection);
-            new H2CommandBuilder(adapter);
-            var table = new DataTable(tn)
+            var spacing = string.Empty;
+            try
             {
-                CaseSensitive = false
-            };
-            adapter.Fill(table);
+                var tn = "simple_test_" + typeStr.Replace('(', '_').Replace(')', '_');
 
-            Debug.Assert(table.Rows.Count.Equals(1));
-            Console.WriteLine($"Type of value: {table.Rows[0][1].GetType().Name}");
-            CheckVal(table.Rows[0][1], originalValue); // 0 — id, 1 — value
+                var cmd = "create table " + tn + " (id identity primary key, value " + typeStr + ")";
+                new H2Command(cmd, connection).ExecuteNonQuery();
 
-            table.Rows.Add(new object[] { null, insertedValue }); // id = null, value = insertedValue
-            adapter.Update(table);
+                dynamic val = originalValue;
 
-            Reload(table, adapter);
-            Debug.Assert(table.Rows.Count.Equals(2));
-            CheckVal(table.Rows[1][1], insertedValue);
+                string originalValueStr;
 
-            table.Rows[1][1] = updatedValue; // 0 — id, 1 — value
-            adapter.Update(table);
+                if (originalValue is string)
+                    originalValueStr = "'" + originalValue + "'";
+                else if (originalValue is DateTime)
+                    originalValueStr = "parsedatetime('" + val.ToString("dd.MM.yyyy HH:mm:ss") + "', 'dd.MM.yyyy HH:mm:ss')";
+                else if (originalValue is byte[])
+                    originalValueStr = "x'" + BitConverter.ToString((byte[])(object)originalValue).Replace("-", "") + "'";
+                else
+                    originalValueStr = originalValue.ToString();
 
-            Reload(table, adapter);
-            Debug.Assert(table.Rows.Count.Equals(2));
-            CheckVal(table.Rows[1][1], updatedValue);
+                cmd = "insert into " + tn + " (value) values (" + originalValueStr + ")";
+                new H2Command(cmd, connection).ExecuteNonQuery();
 
+                var adapter = new H2DataAdapter("select * from " + tn + " order by id", connection);
+                new H2CommandBuilder(adapter);
+                var table = new DataTable(tn)
+                {
+                    CaseSensitive = false
+                };
+                adapter.Fill(table);
+
+                Debug.Assert(table.Rows.Count.Equals(1));
+                var msg = $"Test of Type: [" + table.Rows[0][1].GetType().Name + "]";
+                spacing = new string(' ', Math.Max(1, 30 - msg.Length));
+                Console.Write(msg);
+                CheckVal(table.Rows[0][1], originalValue); // 0 — id, 1 — value
+
+                table.Rows.Add(new object[] { null, insertedValue }); // id = null, value = insertedValue
+                adapter.Update(table);
+
+                Reload(table, adapter);
+                Debug.Assert(table.Rows.Count.Equals(2));
+                CheckVal(table.Rows[1][1], insertedValue);
+
+                table.Rows[1][1] = updatedValue; // 0 — id, 1 — value
+                adapter.Update(table);
+
+                Reload(table, adapter);
+                Debug.Assert(table.Rows.Count.Equals(2));
+                CheckVal(table.Rows[1][1], updatedValue);
+
+                Console.Write(spacing);
+                Console.WriteLine("OK");
+            }
+            catch (Exception ex)
+            {
+                Console.Write(spacing);
+                Console.WriteLine("FAIL");
+                Console.WriteLine(ex.ToString());
+            }
         }
         static void Reload(DataTable table, H2DataAdapter adapter)
         {
@@ -285,5 +309,4 @@ INSERT INTO OCN_CFG.CFG_BRANCH_DEF(guid, last_updated, mbr_id, code, description
             Debug.Assert(expectedVal.Equals(tvalue));
         }
     }
-
 }

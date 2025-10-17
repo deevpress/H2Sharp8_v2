@@ -27,6 +27,8 @@
 #endregion
 using java.sql;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 namespace System.Data.H2
 {
     static class H2Helper
@@ -68,6 +70,37 @@ namespace System.Data.H2
             map(Types.LONGVARBINARY, DbType.Binary, typeof(byte[]), 
                 id, id);
             map(Types.BINARY, DbType.Binary, typeof(byte[]), id, id);
+
+            map(Types.BLOB, DbType.Binary, typeof(byte[]),
+                // CLR -> Java
+                x =>
+                {
+                    if (x == null) return null;
+                    var bytes = (byte[])x;
+                    return new javax.sql.rowset.serial.SerialBlob(bytes);
+                },
+                // Java -> CLR
+                x =>
+                {
+                    if (x == null) return null;
+                    if (x is java.sql.Blob blob)
+                    {
+                        using var stream = blob.getBinaryStream();
+                        using var ms = new MemoryStream();
+                        var buffer = new byte[8192];
+                        int read;
+                        while ((read = stream.read(buffer, 0, buffer.Length)) > 0)
+                        {
+                            ms.Write(buffer, 0, read);
+                        }
+                        return ms.ToArray();
+                    }
+                    if (x is sbyte[] sbarr)
+                        return sbarr.Select(b => (byte)b).ToArray();
+
+                    return x;
+                }
+            );
             map(Types.BOOLEAN, DbType.Boolean, typeof(bool), 
                 x => new java.lang.Boolean((bool)x),
                 x => ((java.lang.Boolean)x).booleanValue()
