@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace H2Example
+namespace H2Example.Extensions
 {
     public static class DataTableExtensions
     {
-        public static String ToXml(this DataTable table)
+        public static string ToXml(this DataTable table)
         {
             var o = new MemoryStream();
             table.WriteXml(o);
