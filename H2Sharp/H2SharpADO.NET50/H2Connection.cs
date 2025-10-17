@@ -1,6 +1,6 @@
-#region MIT License
+﻿#region MIT License
 /*
- * Copyright � 2008 Jonathan Mark Porter.
+ * Copyright © 2008 Jonathan Mark Porter.
  * H2Sharp is a wrapper for the H2 Database Engine. http://h2sharp.googlecode.com
  * 
  * Permission is hereby granted, free of charge, to any person
@@ -76,8 +76,33 @@ namespace System.Data.H2
 
         public override string DataSource
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                if (string.IsNullOrEmpty(ConnectionString))
+                    return string.Empty;
+
+                try
+                {
+                    //Remove "jdbc:h2:" and trim the parameters (;USER=...)
+                    var s = ConnectionString;
+                    var start = s.IndexOf("jdbc:h2:", StringComparison.OrdinalIgnoreCase);
+                    if (start >= 0)
+                        s = s.Substring(start + 8);
+
+                    //Separating the parameters (after ;)
+                    var semi = s.IndexOf(';');
+                    if (semi >= 0)
+                        s = s.Substring(0, semi);
+
+                    return s.Trim('"');
+                }
+                catch
+                {
+                    return ConnectionString;
+                }
+            }
         }
+
         public override string ServerVersion
         {
             get { throw new NotImplementedException(); }
@@ -124,7 +149,23 @@ namespace System.Data.H2
         }
         public override string Database
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                if (string.IsNullOrEmpty(connectionString)) return string.Empty;
+
+                // Example of a connection string: jdbc:h2:C:/Databases/H2_1.4.200/testProvider;USER=sa;PASSWORD=h2
+                try
+                {
+                    var after = connectionString.Substring(connectionString.IndexOf("jdbc:h2:", StringComparison.OrdinalIgnoreCase) + 8);
+                    var path = after.Split(';')[0];
+                    var dbName = System.IO.Path.GetFileName(path);
+                    return string.IsNullOrEmpty(dbName) ? path : dbName;
+                }
+                catch
+                {
+                    return connectionString;
+                }
+            }
         }
         public bool IsOpen { get { return connection != null; } }
 
