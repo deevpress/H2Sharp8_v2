@@ -1,6 +1,6 @@
-#region MIT License
+﻿#region MIT License
 /*
- * Copyright � 2008 Jonathan Mark Porter.
+ * Copyright © 2008 Jonathan Mark Porter.
  * H2Sharp is a wrapper for the H2 Database Engine. http://h2sharp.googlecode.com
  * 
  * Permission is hereby granted, free of charge, to any person
@@ -105,10 +105,16 @@ namespace System.Data.H2
                 x => new java.lang.Boolean((bool)x),
                 x => ((java.lang.Boolean)x).booleanValue()
             );
-            map(Types.TINYINT, DbType.Byte, typeof(byte), 
+
+            //map(Types.TINYINT, DbType.Byte, typeof(byte), 
+            //    x => new java.lang.Byte((byte)x),
+            //    x => ((java.lang.Byte)x).byteValue()
+            //);
+            map(Types.TINYINT, DbType.Byte, typeof(byte),
                 x => new java.lang.Byte((byte)x),
-                x => ((java.lang.Byte)x).byteValue()
+                x => x is java.lang.Number n ? (byte)n.intValue() : Convert.ToByte(x)
             );
+
             map(Types.DATE, DbType.Date, typeof(DateTime), 
                 x => new java.sql.Date((long)(((DateTime)x) - UTCStart).TotalMilliseconds),
                 x => UTCStart.AddMilliseconds(((java.sql.Date)x).getTime())
@@ -134,10 +140,15 @@ namespace System.Data.H2
                 x => new java.lang.Double((double)x),
                 x => ((java.lang.Double)x).doubleValue()
             );
-            map(Types.SMALLINT, DbType.Int16, typeof(short), 
+            //map(Types.SMALLINT, DbType.Int16, typeof(short), 
+            //    x => new java.lang.Short((short)x),
+            //    x => ((java.lang.Short)x).shortValue()
+            //);
+            map(Types.SMALLINT, DbType.Int16, typeof(short),
                 x => new java.lang.Short((short)x),
-                x => ((java.lang.Short)x).shortValue()
+                x => x is java.lang.Number n ? (short)n.intValue() : Convert.ToInt16(x)
             );
+
             map(Types.INTEGER, DbType.Int32, typeof(int), 
                 x => new java.lang.Integer((int)x),
                 x => ((java.lang.Integer)x).intValue()
@@ -163,10 +174,20 @@ namespace System.Data.H2
                 x => new java.lang.Byte((byte)x),
                 x => ((java.lang.Byte)x).byteValue()
             );
-            map(Types.FLOAT, DbType.Single, typeof(float), 
+            //map(Types.FLOAT, DbType.Single, typeof(float), 
+            //    x => new java.lang.Float((float)x),
+            //    x => ((java.lang.Float)x).floatValue()
+            //);
+            map(Types.FLOAT, DbType.Single, typeof(float),
                 x => new java.lang.Float((float)x),
-                x => ((java.lang.Float)x).floatValue()
+                x => x is java.lang.Number n ? (float)n.doubleValue() : Convert.ToSingle(x)
             );
+            map(Types.REAL, DbType.Single, typeof(float),
+                x => new java.lang.Float((float)x),
+                x => x is java.lang.Number n ? (float)n.doubleValue() : Convert.ToSingle(x)
+            );
+
+
             map(Types.NVARCHAR, DbType.String, typeof(string), id, id);
             map(Types.NCHAR, DbType.StringFixedLength, typeof(string), id, id);
             map(Types.TIME, DbType.Time, typeof(DateTime), 
@@ -260,6 +281,41 @@ namespace System.Data.H2
 
             return ret;
         }
+
+        public static int MapSqlTypeNameToJdbcCode(string sqlType)
+        {
+            switch (sqlType.ToUpperInvariant())
+            {
+                case "INTEGER": return 4;   // Types.INTEGER
+                case "BIGINT": return -5;  // Types.BIGINT
+                case "SMALLINT": return 5;   // Types.SMALLINT
+                case "TINYINT": return -6;  // Types.TINYINT
+                case "BOOLEAN": return 16;  // Types.BOOLEAN
+                case "DOUBLE": return 8;   // Types.DOUBLE
+                case "DOUBLE PRECISION": return 8;
+                case "REAL": return 7;   // Types.REAL
+                case "DECIMAL": return 3;   // Types.DECIMAL
+                case "NUMERIC": return 2;   // Types.NUMERIC
+                case "VARCHAR":
+                case "CHARACTER VARYING": return 12;  // Types.VARCHAR
+                case "CHAR":
+                case "CHARACTER": return 1;   // Types.CHAR
+                case "CLOB":
+                case "CHARACTER LARGE OBJECT": return 2005;// Types.CLOB
+                case "BLOB":
+                case "BINARY LARGE OBJECT": return 2004;// Types.BLOB
+                case "VARBINARY": return -3;  // Types.VARBINARY
+                case "BINARY": return -2;  // Types.BINARY
+                case "DATE": return 91;  // Types.DATE
+                case "TIME": return 92;  // Types.TIME
+                case "TIMESTAMP": return 93;  // Types.TIMESTAMP
+                case "UUID": return 1111;// OTHER (ниже можно свести к Guid)
+                case "JSON": return 1111;// OTHER
+                                         // … добавь по мере встречаемости
+                default: return 1111;// OTHER
+            }
+        }
+
         /*
             switch (typeCode)
             {

@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="H2Sharp8_v14200.Driver" Version="1.4.200.14" />
+	<PackageReference Include="H2Sharp8_v22222.Driver" Version="2.2.222.1" />
 	<PackageReference Include="IKVM" Version="8.14.0" />
 	<PackageReference Include="IKVM.Image.JRE" Version="8.14.0" />
 	<PackageReference Include="IKVM.Image.JDK" Version="8.14.0" />

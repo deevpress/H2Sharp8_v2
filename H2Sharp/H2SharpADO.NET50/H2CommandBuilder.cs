@@ -194,23 +194,42 @@ namespace System.Data.H2
             var result = new H2Command(query, connection).ExecuteScalar() as String;
             return result;
         }
-        public static Dictionary<String, T> ReadMap<T>(this H2Connection connection, String query)
+        public static Dictionary<string, T> ReadMap<T>(this H2Connection connection, string query)
         {
-            var ret = new Dictionary<String, T>();
-            var reader = new H2Command(query, connection).ExecuteReader();
+            var ret = new Dictionary<string, T>();
+            using var reader = new H2Command(query, connection).ExecuteReader();
             while (reader.Read())
             {
                 var key = reader.GetString(0);
                 var value = reader.GetValue(1);
+
                 if (value == DBNull.Value)
-                    ret[key] = default(T);
-                else
-                    ret[key] = (T)value;
+                {
+                    ret[key] = default;
+                    continue;
+                }
+
+                if (typeof(T) == typeof(int))
+                {
+                    if (value is string s)
+                    {
+                        // Попробуем преобразовать имя SQL-типа в JDBC-код
+                        int jdbcType = H2Helper.MapSqlTypeNameToJdbcCode(s);
+                        ret[key] = (T)(object)jdbcType;
+                        continue;
+                    }
+                }
+
+                ret[key] = (T)Convert.ChangeType(value, typeof(T));
             }
             return ret;
         }
     }
-	public static class CollectionExtensions
+
+
+
+
+    public static class CollectionExtensions
     {
         public static T[] Array<T>(params T[] a)
         {

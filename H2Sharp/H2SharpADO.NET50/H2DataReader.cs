@@ -385,7 +385,13 @@ namespace System.Data.H2
 				Console.WriteLine(ex);
 			}*/
             var ret = new HashSet<String>();
-            foreach (var list in connection.ReadStrings("select column_list from INFORMATION_SCHEMA.CONSTRAINTS where constraint_type = 'PRIMARY KEY' and upper(table_name) = '" + tableName.ToUpper() + "' "))
+            foreach (var list in connection.ReadStrings(
+                            "SELECT CCU.COLUMN_NAME " +
+                            "FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC " +
+                            "JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE CCU " +
+                            "ON TC.CONSTRAINT_NAME = CCU.CONSTRAINT_NAME " +
+                            "WHERE TC.CONSTRAINT_TYPE = 'PRIMARY KEY' " +
+                            "AND UPPER(TC.TABLE_NAME) = '" + tableName.ToUpper() + "'"))
             {
                 foreach (var col in list.Split(','))
                     ret.Add(col.Trim());
@@ -409,7 +415,8 @@ namespace System.Data.H2
 			} catch (Exception ex) { 
 				Console.WriteLine(ex);
 			}*/
-            return new HashSet<String>(connection.ReadStrings("select column_list from INFORMATION_SCHEMA.CONSTRAINTS where constraint_type = 'UNIQUE' and upper(table_name) = '" + tableName.ToUpper() + "'"));
+            return new HashSet<String>(connection.ReadStrings("select column_list from INFORMATION_SCHEMA.TABLE_CONSTRAINTS where constraint_type = 'UNIQUE' and upper(table_name) = '" + 
+                tableName.ToUpper() + "'"));
         }
     }
 }

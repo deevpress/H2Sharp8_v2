@@ -26,6 +26,7 @@
  */
 #endregion
 
+using org.h2.api;
 using System;
 
 namespace System.Data.H2.Api
@@ -114,9 +115,9 @@ namespace System.Data.H2.Api
         /// </summary>
         protected abstract void OnOpened();
 
-        void org.h2.api.DatabaseEventListener.setProgress(int state, String name, int x, int max)
+        void DatabaseEventListener.setProgress(int i, string str, long l1, long l2)
         {
-            OnSetProgress((ProgressState)state, name, x, max);
+            OnSetProgress((ProgressState)i, str, l1, l2);
         }
 
         /// <summary>
@@ -127,6 +128,6 @@ namespace System.Data.H2.Api
         /// <param name="name">the object name</param>
         /// <param name="x">the current position</param>
         /// <param name="max">the highest value</param>
-        protected abstract void OnSetProgress(ProgressState state, String name, int x, int max);
+        protected abstract void OnSetProgress(ProgressState state, String name, long x, long max);
     }
 }
