@@ -12,6 +12,10 @@ namespace H2Example
             Console.WriteLine();
 
             FileDatabaseTests.RunAll();
+
+            Console.WriteLine();
+
+            H2DatabaseToolsTests.RunAll();
         }
      }
 }

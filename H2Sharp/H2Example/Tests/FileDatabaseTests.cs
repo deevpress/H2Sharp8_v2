@@ -9,7 +9,7 @@ namespace H2Example.Tests
 {
     public static class FileDatabaseTests
     {
-        //Example of ConnectionString = "jdbc:h2:file:C:/Databases/H2_1.4.200/test_real;USER=sa;PASSWORD=h2;AUTO_SERVER=TRUE";
+        //Example of ConnectionString = "jdbc:h2:file:C:/Databases/H2_2.2.222/test_real;USER=sa;PASSWORD=h2;AUTO_SERVER=TRUE";
         private const string ConnectionString = "";
 
         public static void RunAll()
