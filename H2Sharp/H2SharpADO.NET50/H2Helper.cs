@@ -67,10 +67,12 @@ namespace System.Data.H2
             Converter id = x => x;
 			map(Types.VARCHAR, DbType.AnsiString, typeof(string), id, id);
             map(Types.CHAR, DbType.AnsiStringFixedLength, typeof(string), id, id);
+            map(Types.NVARCHAR, DbType.String, typeof(string), id, id);
+            map(Types.NCHAR, DbType.StringFixedLength, typeof(string), id, id);
+
             map(Types.LONGVARBINARY, DbType.Binary, typeof(byte[]), 
                 id, id);
             map(Types.BINARY, DbType.Binary, typeof(byte[]), id, id);
-
             map(Types.BLOB, DbType.Binary, typeof(byte[]),
                 // CLR -> Java
                 x =>
@@ -101,18 +103,10 @@ namespace System.Data.H2
                     return x;
                 }
             );
+
             map(Types.BOOLEAN, DbType.Boolean, typeof(bool), 
                 x => new java.lang.Boolean((bool)x),
                 x => ((java.lang.Boolean)x).booleanValue()
-            );
-
-            //map(Types.TINYINT, DbType.Byte, typeof(byte), 
-            //    x => new java.lang.Byte((byte)x),
-            //    x => ((java.lang.Byte)x).byteValue()
-            //);
-            map(Types.TINYINT, DbType.Byte, typeof(byte),
-                x => new java.lang.Byte((byte)x),
-                x => x is java.lang.Number n ? (byte)n.intValue() : Convert.ToByte(x)
             );
 
             map(Types.DATE, DbType.Date, typeof(DateTime), 
@@ -131,69 +125,64 @@ namespace System.Data.H2
                 x => new java.sql.Timestamp((long)(((DateTimeOffset)x) - UTCStart).TotalMilliseconds),
                 x => (DateTimeOffset)UTCStart.AddMilliseconds(((java.sql.Date)x).getTime())
             );
+            map(Types.TIME, DbType.Time, typeof(DateTime),
+                x => new java.sql.Timestamp((long)(((DateTime)x) - UTCStart).TotalMilliseconds),
+                x => UTCStart.AddMilliseconds(((java.sql.Date)x).getTime())
+            );
+
             map(Types.DECIMAL, DbType.Decimal, typeof(decimal), 
-                //TODO: test me !
                 x => new java.math.BigDecimal(((decimal)x).ToString()),
                 x => decimal.Parse(((java.math.BigDecimal)x).toString())
             );
-            map(Types.DOUBLE, DbType.Double, typeof(double), 
+
+            map(Types.REAL, DbType.Single, typeof(float),
+                x => new java.lang.Float((float)x),
+                x => x is java.lang.Number n ? (float)n.doubleValue() : Convert.ToSingle(x)
+            );
+            map(Types.FLOAT, DbType.Single, typeof(float),
+                x => new java.lang.Float((float)x),
+                x => x is java.lang.Number n ? (float)n.doubleValue() : Convert.ToSingle(x)
+            );
+            map(Types.DOUBLE, DbType.Double, typeof(double),
                 x => new java.lang.Double((double)x),
                 x => ((java.lang.Double)x).doubleValue()
             );
-            //map(Types.SMALLINT, DbType.Int16, typeof(short), 
-            //    x => new java.lang.Short((short)x),
-            //    x => ((java.lang.Short)x).shortValue()
-            //);
+
+            map(Types.TINYINT, DbType.Byte, typeof(byte),
+                x => new java.lang.Byte((byte)x),
+                x => x is java.lang.Number n ? (byte)n.intValue() : Convert.ToByte(x)
+            );
+            map(Types.TINYINT, DbType.SByte, typeof(byte),
+                x => new java.lang.Byte((byte)x),
+                x => ((java.lang.Byte)x).byteValue()
+            );
             map(Types.SMALLINT, DbType.Int16, typeof(short),
                 x => new java.lang.Short((short)x),
                 x => x is java.lang.Number n ? (short)n.intValue() : Convert.ToInt16(x)
             );
-
+            map(Types.SMALLINT, DbType.UInt16, typeof(ushort),
+                x => new java.lang.Short((short)(ushort)x),
+                x => (ushort)((java.lang.Short)x).shortValue()
+            );
             map(Types.INTEGER, DbType.Int32, typeof(int), 
                 x => new java.lang.Integer((int)x),
                 x => ((java.lang.Integer)x).intValue()
-            );
-            map(Types.BIGINT, DbType.Int64, typeof(long), 
-                x => new java.lang.Long((long)x),
-                x => ((java.lang.Long)x).longValue()
-            );
-            map(Types.SMALLINT, DbType.UInt16, typeof(ushort), 
-                x => new java.lang.Short((short)(ushort)x),
-                x => (ushort)((java.lang.Short)x).shortValue()
             );
             map(Types.INTEGER, DbType.UInt32, typeof(uint),
                 x => new java.lang.Integer((int)(uint)x),
                 x => (uint)((java.lang.Integer)x).intValue()
             );
+            map(Types.BIGINT, DbType.Int64, typeof(long), 
+                x => new java.lang.Long((long)x),
+                x => ((java.lang.Long)x).longValue()
+            );
             map(Types.BIGINT, DbType.UInt64, typeof(ulong), 
                 x => new java.lang.Long((long)(ulong)x),
                 x => (ulong)((java.lang.Long)x).longValue()
             );
+
             map(Types.JAVA_OBJECT, DbType.Object, typeof(Object), id, id);
-            map(Types.TINYINT, DbType.SByte, typeof(byte), 
-                x => new java.lang.Byte((byte)x),
-                x => ((java.lang.Byte)x).byteValue()
-            );
-            //map(Types.FLOAT, DbType.Single, typeof(float), 
-            //    x => new java.lang.Float((float)x),
-            //    x => ((java.lang.Float)x).floatValue()
-            //);
-            map(Types.FLOAT, DbType.Single, typeof(float),
-                x => new java.lang.Float((float)x),
-                x => x is java.lang.Number n ? (float)n.doubleValue() : Convert.ToSingle(x)
-            );
-            map(Types.REAL, DbType.Single, typeof(float),
-                x => new java.lang.Float((float)x),
-                x => x is java.lang.Number n ? (float)n.doubleValue() : Convert.ToSingle(x)
-            );
 
-
-            map(Types.NVARCHAR, DbType.String, typeof(string), id, id);
-            map(Types.NCHAR, DbType.StringFixedLength, typeof(string), id, id);
-            map(Types.TIME, DbType.Time, typeof(DateTime), 
-                x => new java.sql.Timestamp((long)(((DateTime)x) - UTCStart).TotalMilliseconds),
-                x => UTCStart.AddMilliseconds(((java.sql.Date)x).getTime())
-            );
             map(Types.ARRAY, DbType.VarNumeric, null, id, id);
 			//DbType.Guid:
 			//DbType.Currency:
@@ -309,43 +298,11 @@ namespace System.Data.H2
                 case "DATE": return 91;  // Types.DATE
                 case "TIME": return 92;  // Types.TIME
                 case "TIMESTAMP": return 93;  // Types.TIMESTAMP
-                case "UUID": return 1111;// OTHER (ниже можно свести к Guid)
+                case "UUID": return 1111;// OTHER (below can be reduced to a Guid)
                 case "JSON": return 1111;// OTHER
-                                         // … добавь по мере встречаемости
+                                         // ... add as needed
                 default: return 1111;// OTHER
             }
         }
-
-        /*
-            switch (typeCode)
-            {
-                case 0:
-                    return typeof(DBNull);
-                case -2:
-                case 2004:
-                case -4:
-                case -3:
-                    return typeof(byte[]);
-                case -1:
-                case 12:
-                    return typeof(string);
-                case 4:
-                    return typeof(int);
-                case 3:
-                    return typeof(decimal);
-                case 1:
-                    return typeof(char);
-                case 6:
-                    return typeof(float);
-                case 8:
-                    return typeof(double);
-                case -5:
-                    return typeof(long);
-                case 5:
-                    return typeof(short);
-                default:
-                    return null;
-            }
-         * */
     }
 }

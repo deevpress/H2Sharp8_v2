@@ -15,8 +15,11 @@ namespace System.Data.H2
         public H2DbContext(string connectionString)
         {
             _connection = new H2Connection(connectionString);
-            _connection.Open();
         }
+
+        public H2Connection Connection => _connection;
+
+        public void Open() => _connection.Open();
 
         /// <summary>
         /// Executes SQL without return (INSERT, UPDATE, DELETE).
